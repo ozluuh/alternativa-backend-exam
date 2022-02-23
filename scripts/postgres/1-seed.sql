@@ -1,14 +1,5 @@
 \connect examdb
 
-CREATE TABLE tb_category
-(
-    id           serial        PRIMARY KEY,
-    name         VARCHAR(80)   NOT NULL,
-    description  VARCHAR(255)  NOT NULL
-);
-
-ALTER TABLE "tb_category" OWNER TO devuser;
-
 INSERT INTO tb_category (name, description)
 VALUES ('Quiche Assorted', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin risus. Praesent lectus.');
 
