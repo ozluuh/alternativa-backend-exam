@@ -1,5 +1,7 @@
 using System;
+using Domain.Repositories;
 using Infra.Contexts;
+using Infra.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +32,9 @@ namespace Api
 
             var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
             services.AddDbContext<ApiDbContext>(opt => opt.UseNpgsql(connectionString));
+
+            services.AddScoped<ApiDbContext>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
