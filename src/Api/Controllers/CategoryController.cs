@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -24,10 +25,20 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Category>> GetCategoryList()
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategoryList()
         {
-            return await _repo.GetAllAsync();
+            var task = await _repo.GetAllAsync();
+            return await task.ToListAsync();
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<Category>> GetCategoryById([FromRoute] long id)
+        {
+            var data = await _repo.GetByIdAsync(id);
+
+            return data;
+        }
     }
 }
