@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Repositories;
@@ -34,9 +34,9 @@ namespace Infra.Repositories
             await Task.Run(() => _context.Set<E>().Remove(entity));
         }
 
-        public async Task<IQueryable<E>> GetAllAsync()
+        public async Task<IEnumerable<E>> GetAllAsync()
         {
-            return await Task.Run(() => _context.Set<E>().AsNoTracking());
+            return await _context.Set<E>().AsNoTracking().ToListAsync();
         }
 
         public async Task<E> GetByIdAsync(long id)

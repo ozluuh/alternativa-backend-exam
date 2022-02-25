@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
 
@@ -6,7 +6,7 @@ namespace Domain.Repositories
 {
     public interface IRepositoryBase<E> where E : EntityBase
     {
-        Task<IQueryable<E>> GetAllAsync();
+        Task<IEnumerable<E>> GetAllAsync();
         Task<E> GetByIdAsync(long id);
         Task CreateAsync(E entity);
         Task UpdateAsync(E entity);
