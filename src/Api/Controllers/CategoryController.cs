@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
@@ -14,21 +10,19 @@ namespace Api.Controllers
     [Route("/api/category")]
     public class CategoryController : ControllerBase
     {
-        private readonly ILogger<CategoryController> _logger;
-
         private readonly ICategoryRepository _repo;
 
-        public CategoryController(IServiceProvider serviceProvider)
+        public CategoryController(ICategoryRepository repo)
         {
-            _logger = serviceProvider.GetService<ILogger<CategoryController>>();
-            _repo = serviceProvider.GetService<ICategoryRepository>();
+            _repo = repo;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategoryList()
         {
-            var task = await _repo.GetAllAsync();
-            return await task.ToListAsync();
+            var data = await _repo.GetAllAsync();
+
+            return Ok(data);
         }
 
         [HttpGet("{id}")]
