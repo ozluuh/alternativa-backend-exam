@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Repositories;
@@ -21,6 +22,13 @@ namespace Api.Controllers
         public async Task<ActionResult<IEnumerable<Category>>> GetCategoryList()
         {
             var data = await _repo.GetAllAsync();
+
+            // NOTE: Only demo for test purposes
+            // TIP: If empty list, return 200 code
+            if (data.Count() == 0)
+            {
+                return BadRequest();
+            }
 
             return Ok(data);
         }

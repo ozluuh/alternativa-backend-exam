@@ -26,6 +26,19 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Api", "Controller")]
+        public async Task GetCategoryList_ReturnsBadRequestResult_WhenNoData()
+        {
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Category>());
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.GetCategoryList();
+
+            Assert.IsType<BadRequestResult>(result.Result);
+        }
+
+        [Fact]
+        [Trait("Api", "Controller")]
         public async Task GetCategoryById_ReturnsOkObjectResult_WhenSuccessful()
         {
             var mockRepo = new Mock<ICategoryRepository>();
@@ -39,7 +52,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Api", "Controller")]
-        public async Task GetCategoryById_ReturnsBadRequestObjectResult_WhenNoData()
+        public async Task GetCategoryById_ReturnsBadRequestResult_WhenNoData()
         {
             var mockRepo = new Mock<ICategoryRepository>();
             mockRepo.Setup(repo => repo.GetByIdAsync(-1L)).ReturnsAsync(() => null);
@@ -47,7 +60,7 @@ namespace Tests.Api.ControllerTests
 
             var result = await controller.GetCategoryById(-1L);
 
-            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<BadRequestResult>(result.Result);
         }
     }
 }
