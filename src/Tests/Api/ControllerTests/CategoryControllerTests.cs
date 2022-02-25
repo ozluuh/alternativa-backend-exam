@@ -13,13 +13,26 @@ namespace Tests.Api.ControllerTests
     {
         [Fact]
         [Trait("Api", "Controller")]
-        public async Task GetCategoryList_ReturnsOkObjectResult_WhenSuccessful() {
-
+        public async Task GetCategoryList_ReturnsOkObjectResult_WhenSuccessful()
+        {
             var mockRepo = new Mock<ICategoryRepository>();
             mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Category>());
             var controller = new CategoryController(mockRepo.Object);
 
             var result = await controller.GetCategoryList();
+
+            Assert.IsType<OkObjectResult>(result.Result);
+        }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task GetCategoryById_ReturnsOkObjectResult_WhenSuccessful()
+        {
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.GetByIdAsync(1L)).ReturnsAsync(new Category());
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.GetCategoryById(1L);
 
             Assert.IsType<OkObjectResult>(result.Result);
         }

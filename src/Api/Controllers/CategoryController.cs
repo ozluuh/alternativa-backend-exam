@@ -32,7 +32,7 @@ namespace Api.Controllers
         {
             var data = await _repo.GetByIdAsync(id);
 
-            return data;
+            return Ok(data);
         }
     }
 }
