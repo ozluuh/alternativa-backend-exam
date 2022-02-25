@@ -26,11 +26,14 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
         public async Task<ActionResult<Category>> GetCategoryById([FromRoute] long id)
         {
             var data = await _repo.GetByIdAsync(id);
+
+            if (data == null)
+            {
+                return BadRequest(data);
+            }
 
             return Ok(data);
         }
