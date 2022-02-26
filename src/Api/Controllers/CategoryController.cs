@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Attributes;
@@ -6,6 +7,7 @@ using Domain.Commands.Inputs;
 using Domain.Commands.Results;
 using Domain.Entities;
 using Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -56,7 +58,28 @@ namespace Api.Controllers
             var response = await _repo.CreateAsync(category);
             await _repo.CommitAsync();
 
+            // NOTE: Only for testing purposes
+            // TIP: When creating register, return `201 CREATED` over `200 OK`
             return Ok(response);
+        }
+
+        [HttpPut]
+        [ValidateModel]
+        public async Task<ActionResult<CategoryCommandResult>> UpdateCategory([FromBody] UpdateCategoryCommand category)
+        {
+            try
+            {
+                var response = await _repo.UpdateAsync(category);
+                await _repo.CommitAsync();
+
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         }
     }
 }

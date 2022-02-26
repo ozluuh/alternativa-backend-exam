@@ -91,5 +91,32 @@ namespace Tests.Api.ControllerTests
 
             Assert.IsType<OkObjectResult>(result.Result);
         }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task UpdateCategory_ReturnsOkObjectResult_WhenSuccessfull()
+        {
+            var category = new Category()
+            {
+                Id = 1L,
+                Description = "Fukashigi no Carte",
+                Name = "Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai"
+            };
+
+            var updateCategoryCommand = new UpdateCategoryCommand()
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description
+            };
+
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.UpdateAsync(category)).ReturnsAsync(category);
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.UpdateCategory(updateCategoryCommand);
+
+            Assert.IsType<OkObjectResult>(result.Result);
+        }
     }
 }
