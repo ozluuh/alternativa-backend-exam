@@ -23,9 +23,10 @@ namespace Infra.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public async Task CreateAsync(E entity)
+        public async Task<E> CreateAsync(E entity)
         {
             await _context.Set<E>().AddAsync(entity);
+            return entity;
         }
 
         public async Task DeleteAsync(long id)
@@ -47,9 +48,10 @@ namespace Infra.Repositories
                             .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task UpdateAsync(E entity)
+        public async Task<E> UpdateAsync(E entity)
         {
             await Task.Run(() => _context.Set<E>().Update(entity));
+            return entity;
         }
     }
 }

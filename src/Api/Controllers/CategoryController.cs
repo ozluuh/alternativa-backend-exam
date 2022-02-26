@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Attributes;
+using Domain.Commands.Inputs;
+using Domain.Commands.Results;
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +47,16 @@ namespace Api.Controllers
             }
 
             return Ok(data);
+        }
+
+        [HttpPost]
+        [ValidateModel]
+        public async Task<ActionResult<CategoryCommandResult>> StoreCategory([FromBody] StoreCategoryCommand category)
+        {
+            var response = await _repo.CreateAsync(category);
+            await _repo.CommitAsync();
+
+            return Ok(response);
         }
     }
 }

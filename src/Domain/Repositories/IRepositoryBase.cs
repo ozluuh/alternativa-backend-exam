@@ -8,8 +8,8 @@ namespace Domain.Repositories
     {
         Task<IEnumerable<E>> GetAllAsync();
         Task<E> GetByIdAsync(long id);
-        Task CreateAsync(E entity);
-        Task UpdateAsync(E entity);
+        Task<E> CreateAsync(E entity);
+        Task<E> UpdateAsync(E entity);
         Task DeleteAsync(long id);
         Task<int> CommitAsync();
     }

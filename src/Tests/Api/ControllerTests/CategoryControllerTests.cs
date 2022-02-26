@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Controllers;
+using Domain.Commands.Inputs;
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,9 @@ namespace Tests.Api.ControllerTests
         public async Task GetCategoryList_ReturnsOkObjectResult_WhenSuccessful()
         {
             var mockRepo = new Mock<ICategoryRepository>();
-            mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Category>());
+            mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Category>() {
+                new Category()
+            });
             var controller = new CategoryController(mockRepo.Object);
 
             var result = await controller.GetCategoryList();
@@ -61,6 +64,32 @@ namespace Tests.Api.ControllerTests
             var result = await controller.GetCategoryById(-1L);
 
             Assert.IsType<BadRequestResult>(result.Result);
+        }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task StoreCategory_ReturnsOkObjectResult_WhenSuccessfull()
+        {
+            var category = new Category()
+            {
+                Id = 1L,
+                Description = "Fukashigi no Carte",
+                Name = "Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai"
+            };
+
+            var storeCategoryCommand = new StoreCategoryCommand()
+            {
+                Name = category.Name,
+                Description = category.Description
+            };
+
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.CreateAsync(category)).ReturnsAsync(category);
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.StoreCategory(storeCategoryCommand);
+
+            Assert.IsType<OkObjectResult>(result.Result);
         }
     }
 }
