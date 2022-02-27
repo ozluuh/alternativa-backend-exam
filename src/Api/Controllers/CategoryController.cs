@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Api.Attributes;
 using Domain.Commands.Inputs;
 using Domain.Commands.Results;
-using Domain.Entities;
+using Domain.Mappings;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,18 +24,20 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategoryList()
+        public async Task<ActionResult<IEnumerable<CategoryCommandResult>>> GetCategoryList()
         {
             try
             {
-                var data = await _repo.GetAllAsync();
+                var response = await _repo.GetAllAsync();
 
                 // NOTE: Only demo for test purposes
                 // TIP: If empty list, return 200 code
-                if (data.Count() == 0)
+                if (response.Count() == 0)
                 {
                     return BadRequest();
                 }
+
+                var data = response.Select(e => e.ToCommandResult());
 
                 return Ok(data);
             }
@@ -46,7 +48,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategoryById([FromRoute] long id)
+        public async Task<ActionResult<CategoryCommandResult>> GetCategoryById([FromRoute] long id)
         {
             // COMMENT: Prevents unnecessary database query
             if (id <= 0)
@@ -63,7 +65,7 @@ namespace Api.Controllers
                     return BadRequest();
                 }
 
-                return Ok(data);
+                return Ok(data.ToCommandResult());
             }
             catch (Exception)
             {
@@ -79,12 +81,12 @@ namespace Api.Controllers
         {
             try
             {
-                var response = await _repo.CreateAsync(category);
+                var response = await _repo.CreateAsync(category.ToDomain());
                 await _repo.CommitAsync();
 
                 // NOTE: Only for testing purposes
                 // TIP: When creating register, return `201 CREATED` over `200 OK`
-                return Ok(response);
+                return Ok(response.ToCommandResult());
             }
             catch (Exception)
             {
@@ -98,10 +100,10 @@ namespace Api.Controllers
         {
             try
             {
-                var response = await _repo.UpdateAsync(category);
+                var response = await _repo.UpdateAsync(category.ToDomain());
                 await _repo.CommitAsync();
 
-                return Ok(response);
+                return Ok(response.ToCommandResult());
             }
             catch (Exception)
             {
@@ -112,13 +114,12 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveCategory([FromRoute] long id)
         {
-            try
-            {
                 if (id <= 0)
                 {
                     return BadRequest();
                 }
-
+            try
+            {
                 await _repo.DeleteAsync(id);
                 await _repo.CommitAsync();
 

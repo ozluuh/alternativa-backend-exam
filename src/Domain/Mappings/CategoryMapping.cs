@@ -14,14 +14,14 @@ namespace Domain.Mappings
                 Description = entity.Description
             };
 
-        public static Category ToCategory(this StoreCategoryCommand entity)
+        public static Category ToDomain(this StoreCategoryCommand entity)
             => new Category()
             {
                 Name = entity.Name,
                 Description = entity.Description
             };
 
-        public static Category ToCategory(this UpdateCategoryCommand entity)
+        public static Category ToDomain(this UpdateCategoryCommand entity)
             => new Category()
             {
                 Id = entity.Id,
