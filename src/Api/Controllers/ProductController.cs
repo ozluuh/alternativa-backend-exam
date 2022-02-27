@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.Commands.Results;
 using Domain.Mappings;
 using Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -33,6 +35,31 @@ namespace Api.Controllers
             var data = response.Select(entity => entity.ToCommandResult());
 
             return Ok(data);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProductCommandResult>> GetProductById([FromRoute] long id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var response = await _repo.GetByIdAsync(id);
+
+                if (response == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(response.ToCommandResult());
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Domain.Mappings
                 Value = entity.Value.GetValueOrDefault(0),
                 Brand = entity.Brand,
                 CategoryId = entity.CategoryId,
-                Category = entity.Category.ToCommandResult()
+                Category = entity.Category?.ToCommandResult()
             };
     }
 }
