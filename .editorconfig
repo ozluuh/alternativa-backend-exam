@@ -14,3 +14,6 @@ insert_final_newline = true
 [*.sln]
 indent_style = tab
 end_of_line = crlf
+
+[*.{yaml,yml}]
+indent_size = 2

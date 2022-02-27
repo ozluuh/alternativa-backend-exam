@@ -1,0 +1,55 @@
+version: '3'
+
+networks:
+  nt-api:
+    driver: bridge
+  nt-db:
+    driver: bridge
+
+services:
+  exam_api:
+    container_name: app-api
+    image: exam_api:latest
+    depends_on:
+      - "postgres_image"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${TARGET:-prod}
+    ports:
+      - 8000:80
+      - 5000:8080
+    environment:
+      DB_CONNECTION_STRING: "host=postgres_image;port=5432;database=examdb;username=devuser;password=devpass"
+    networks:
+      - nt-api
+
+  postgres_image:
+    container_name: db-postgres
+    image: postgres:latest
+    ports:
+      - 5432
+    restart: always
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+      - ./scripts/postgres:/docker-entrypoint-initdb.d/
+    environment:
+      POSTGRES_USER: "devuser"
+      POSTGRES_PASSWORD: "devpass"
+      POSTGRES_DB: "examdb"
+    networks:
+      - nt-api
+      - nt-db
+
+  adminer:
+    container_name: dbms-adminer
+    depends_on:
+      - "postgres_image"
+    image: adminer:latest
+    ports:
+      - 9999:8080
+    networks:
+      - nt-db
+
+volumes:
+  db_volume:
