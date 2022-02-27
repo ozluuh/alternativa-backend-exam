@@ -114,10 +114,10 @@ namespace Api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveCategory([FromRoute] long id)
         {
-                if (id <= 0)
-                {
-                    return BadRequest();
-                }
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
             try
             {
                 await _repo.DeleteAsync(id);

@@ -24,6 +24,12 @@ namespace Api.Controllers
         {
 
             var response = await _repo.GetAllAsync();
+
+            if (response.Count() == 0)
+            {
+                return BadRequest();
+            }
+
             var data = response.Select(entity => entity.ToCommandResult());
 
             return Ok(data);

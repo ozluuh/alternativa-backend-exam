@@ -16,12 +16,27 @@ namespace Tests.Api.ControllerTests
         public async Task GetProductList_ReturnsOkObjectResult_WhenSuccessful()
         {
             var mockRepo = new Mock<IProductRepository>();
-            mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Product>());
+            mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Product>(){
+                new Product()
+            });
             var controller = new ProductController(mockRepo.Object);
 
             var response = await controller.GetProductList();
 
             Assert.IsType<OkObjectResult>(response.Result);
+        }
+
+        [Fact]
+        [Trait("Product", "Controller")]
+        public async Task GetProductList_ReturnsBadRequestResult_WhenNoData()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(new List<Product>());
+            var controller = new ProductController(mockRepo.Object);
+
+            var response = await controller.GetProductList();
+
+            Assert.IsType<BadRequestResult>(response.Result);
         }
     }
 }
