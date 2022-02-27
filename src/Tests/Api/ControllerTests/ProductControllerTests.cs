@@ -43,6 +43,22 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Product", "Controller")]
+        public async Task GetProductList_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo.Setup(repo => repo.GetAllAsync()).Throws<Exception>();
+            var controller = new ProductController(mockRepo.Object);
+
+            var response = await controller.GetProductList();
+
+            var res = (StatusCodeResult)response.Result;
+
+            Assert.IsType<StatusCodeResult>(response.Result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
+        }
+
+        [Fact]
+        [Trait("Product", "Controller")]
         public async Task GetProductById_ReturnsOkObjectResult_WhenSuccessful()
         {
             var mockRepo = new Mock<IProductRepository>();
@@ -88,7 +104,7 @@ namespace Tests.Api.ControllerTests
             var controller = new ProductController(mockRepo.Object);
 
             var response = await controller.GetProductById(999L);
-            var res = (StatusCodeResult) response.Result;
+            var res = (StatusCodeResult)response.Result;
 
             Assert.IsType<StatusCodeResult>(response.Result);
             Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);

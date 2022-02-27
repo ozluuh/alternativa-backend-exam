@@ -24,17 +24,23 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductCommandResult>>> GetProductList()
         {
-
-            var response = await _repo.GetAllAsync();
-
-            if (response.Count() == 0)
+            try
             {
-                return BadRequest();
+                var response = await _repo.GetAllAsync();
+
+                if (response.Count() == 0)
+                {
+                    return BadRequest();
+                }
+
+                var data = response.Select(entity => entity.ToCommandResult());
+
+                return Ok(data);
             }
-
-            var data = response.Select(entity => entity.ToCommandResult());
-
-            return Ok(data);
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("{id}")]
