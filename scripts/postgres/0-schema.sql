@@ -17,9 +17,9 @@ CREATE TABLE tb_product
 (
     id           serial        PRIMARY KEY,
     name         VARCHAR(80)   NOT NULL,
-    description  VARCHAR(255)  NOT NULL,
+    description  TEXT          NOT NULL,
     value        NUMERIC(7,2)  ,
-    brand        VARCHAR(60)   NOT NULL,
+    brand        VARCHAR(60)   ,
     category_id  INT           NOT NULL
 );
 

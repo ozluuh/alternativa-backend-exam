@@ -17,5 +17,14 @@ namespace Infra.Repositories
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
+
+        public override async Task<Product> CreateAsync(Product entity)
+        {
+            await base.CreateAsync(entity);
+
+            _context.Entry(entity).Reference(p => p.Category).Load();
+
+            return entity;
+        }
     }
 }

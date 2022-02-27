@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Attributes;
 using Domain.Commands.Results;
+using Domain.Entities;
 using Domain.Mappings;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -59,6 +61,23 @@ namespace Api.Controllers
                 {
                     return BadRequest();
                 }
+
+                return Ok(response.ToCommandResult());
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        [ValidateModel]
+        public async Task<ActionResult<ProductCommandResult>> StoreProduct([FromBody] StoreProductCommand storeProduct)
+        {
+            try
+            {
+                var response = await _repo.CreateAsync(storeProduct.ToDomain());
+                await _repo.CommitAsync();
 
                 return Ok(response.ToCommandResult());
             }

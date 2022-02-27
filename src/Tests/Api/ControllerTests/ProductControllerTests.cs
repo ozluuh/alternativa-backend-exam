@@ -109,5 +109,61 @@ namespace Tests.Api.ControllerTests
             Assert.IsType<StatusCodeResult>(response.Result);
             Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
         }
+
+        [Fact]
+        [Trait("Product", "Controller")]
+        public async Task StoreProduct_ReturnsOkObjectResult_WhenSuccessful()
+        {
+            var product = new Product()
+            {
+                Id = 1L,
+                Name = "My Dress-Up Darling",
+                Description = "Official Music Video",
+                Brand = "Akase Akari",
+                Value = 9,
+                CategoryId = 1
+            };
+
+            var storeProduct = new StoreProductCommand()
+            {
+                Name = product.Name,
+                Description = product.Description,
+                Brand = product.Brand,
+                Value = product.Value.GetValueOrDefault(),
+                CategoryId = product.CategoryId
+            };
+
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo.Setup(repo => repo.CreateAsync(It.IsAny<Product>())).ReturnsAsync(product);
+            var controller = new ProductController(mockRepo.Object);
+
+            var response = await controller.StoreProduct(storeProduct);
+
+            Assert.IsType<OkObjectResult>(response.Result);
+        }
+
+        [Fact]
+        [Trait("Product", "Controller")]
+        public async Task StoreProduct_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        {
+            var storeProduct = new StoreProductCommand()
+            {
+                Name = "My Dress-Up Darling",
+                Description = "Official Music Video",
+                Brand = "Akase Akari",
+                Value = 9,
+                CategoryId = 1
+            };
+
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo.Setup(repo => repo.CreateAsync(It.IsAny<Product>())).Throws<Exception>();
+            var controller = new ProductController(mockRepo.Object);
+
+            var response = await controller.StoreProduct(storeProduct);
+            var res = (StatusCodeResult)response.Result;
+
+            Assert.IsType<StatusCodeResult>(response.Result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
+        }
     }
 }
