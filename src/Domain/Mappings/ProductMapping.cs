@@ -26,5 +26,16 @@ namespace Domain.Mappings
                 Brand = entity.Brand,
                 CategoryId = entity.CategoryId
             };
+
+        public static Product ToDomain(this UpdateProductCommand entity)
+            => new Product()
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Description = entity.Description,
+                Value = entity.Value,
+                Brand = entity.Brand,
+                CategoryId = entity.CategoryId
+            };
     }
 }

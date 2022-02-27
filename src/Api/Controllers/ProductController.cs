@@ -86,5 +86,30 @@ namespace Api.Controllers
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [HttpPut]
+        [ValidateModel]
+        public async Task<ActionResult<ProductCommandResult>> UpdateProduct([FromBody] UpdateProductCommand updateProductCommand)
+        {
+            // NOTE: Validate if `id` not filled or less/equal than 0
+            // COMMENT: Implementation beyond API documentation, since this causes new entry in database
+            // TIP: Validation must be change to `Required` or other annotation in Command Input
+            if (updateProductCommand.Id <= 0)
+            {
+                return BadRequest(new { id = "Required/Must be filled" });
+            }
+
+            try
+            {
+                var product = await _repo.UpdateAsync(updateProductCommand.ToDomain());
+                await _repo.CommitAsync();
+
+                return Ok(product.ToCommandResult());
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }

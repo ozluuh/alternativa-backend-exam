@@ -18,13 +18,23 @@ namespace Infra.Repositories
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public override async Task<Product> CreateAsync(Product entity)
+        private Product IncludeReferences(Product entity)
         {
-            await base.CreateAsync(entity);
-
             _context.Entry(entity).Reference(p => p.Category).Load();
 
             return entity;
+        }
+
+        public override async Task<Product> CreateAsync(Product entity)
+        {
+            await base.CreateAsync(entity);
+            return IncludeReferences(entity);
+        }
+
+        public override async Task<Product> UpdateAsync(Product entity)
+        {
+            await base.UpdateAsync(entity);
+            return IncludeReferences(entity);
         }
     }
 }

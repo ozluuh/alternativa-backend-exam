@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Controllers;
 using Domain.Entities;
+using Domain.Mappings;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -164,6 +165,85 @@ namespace Tests.Api.ControllerTests
 
             Assert.IsType<StatusCodeResult>(response.Result);
             Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
+        }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task UpdateProduct_ReturnsOkObjectResult_WhenSuccessfull()
+        {
+            var updateProductCommand = new UpdateProductCommand()
+            {
+                Id = 1L,
+                Name = "My Dress-Up Darling",
+                Description = "Official Music Video",
+                Brand = "Akase Akari",
+                Value = 9,
+                CategoryId = 1
+            };
+
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo
+                .Setup(repo => repo.UpdateAsync(It.IsAny<Product>()))
+                .ReturnsAsync(updateProductCommand.ToDomain());
+
+            var controller = new ProductController(mockRepo.Object);
+
+            var result = await controller.UpdateProduct(updateProductCommand);
+
+            Assert.IsType<OkObjectResult>(result.Result);
+        }
+
+        [Fact]
+        [Trait("Product", "Controller")]
+        public async Task UpdateProduct_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        {
+            var updateProduct = new UpdateProductCommand()
+            {
+                Id = 1L,
+                Name = "My Dress-Up Darling",
+                Description = "Official Music Video",
+                Brand = "Akase Akari",
+                Value = 9,
+                CategoryId = 1
+            };
+
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo
+                .Setup(repo => repo.UpdateAsync(It.IsAny<Product>()))
+                .Throws<Exception>();
+
+            var controller = new ProductController(mockRepo.Object);
+
+            var response = await controller.UpdateProduct(updateProduct);
+            var res = (StatusCodeResult)response.Result;
+
+            Assert.IsType<StatusCodeResult>(response.Result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
+        }
+
+        [Fact]
+        [Trait("Product", "Controller")]
+        public async Task UpdateProduct_ReturnsBadRequestResult_WhenIdIsNullOrLessOrEqualThanZero()
+        {
+            var updateProduct = new UpdateProductCommand()
+            {
+                Name = "My Dress-Up Darling",
+                Description = "Official Music Video",
+                Brand = "Akase Akari",
+                Value = 9,
+                CategoryId = 1
+            };
+
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo
+                .Setup(repo => repo.UpdateAsync(It.IsAny<Product>()))
+                .Throws<Exception>();
+
+            var controller = new ProductController(mockRepo.Object);
+
+            var response = await controller.UpdateProduct(updateProduct);
+
+            Assert.IsType<BadRequestResult>(response.Result);
         }
     }
 }
