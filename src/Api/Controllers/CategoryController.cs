@@ -48,6 +48,12 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategoryById([FromRoute] long id)
         {
+            // COMMENT: Prevents unnecessary database query
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var data = await _repo.GetByIdAsync(id);
