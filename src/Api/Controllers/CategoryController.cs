@@ -41,17 +41,19 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategoryById([FromRoute] long id)
         {
-            try{
-            var data = await _repo.GetByIdAsync(id);
-
-            if (data == null)
+            try
             {
-                return BadRequest();
-            }
+                var data = await _repo.GetByIdAsync(id);
 
-            return Ok(data);
+                if (data == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(data);
             }
-            catch(Exception){
+            catch (Exception)
+            {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
 
@@ -91,7 +93,7 @@ namespace Api.Controllers
         {
             try
             {
-                if(id <= 0)
+                if (id <= 0)
                 {
                     return BadRequest();
                 }
