@@ -72,6 +72,7 @@ namespace Api.Controllers
 
         }
 
+        // COMMENT: ValidateModel check and return BadRequest if model is invalid
         [HttpPost]
         [ValidateModel]
         public async Task<ActionResult<CategoryCommandResult>> StoreCategory([FromBody] StoreCategoryCommand category)
