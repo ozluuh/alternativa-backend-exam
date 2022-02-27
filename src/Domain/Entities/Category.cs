@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Domain.Commands.Inputs;
 
 namespace Domain.Entities
@@ -6,6 +7,8 @@ namespace Domain.Entities
     {
         public string Name { get; set; }
         public string Description { get; set; }
+
+        public virtual ICollection<Product> Products { get; set; }
 
         public static implicit operator Category(StoreCategoryCommand entity) => new Category()
         {

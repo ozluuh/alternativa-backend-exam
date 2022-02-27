@@ -47,6 +47,7 @@ namespace Api
 
             services.AddScoped<ApiDbContext>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
