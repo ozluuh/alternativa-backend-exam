@@ -118,5 +118,18 @@ namespace Tests.Api.ControllerTests
 
             Assert.IsType<OkObjectResult>(result.Result);
         }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task DeleteCategory_ReturnsOkResult_WhenSuccessfull()
+        {
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.DeleteAsync(1L));
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.RemoveCategory(1L);
+
+            Assert.IsType<OkResult>(result);
+        }
     }
 }

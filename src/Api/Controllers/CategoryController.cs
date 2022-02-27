@@ -41,6 +41,7 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategoryById([FromRoute] long id)
         {
+            try{
             var data = await _repo.GetByIdAsync(id);
 
             if (data == null)
@@ -49,6 +50,11 @@ namespace Api.Controllers
             }
 
             return Ok(data);
+            }
+            catch(Exception){
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
         }
 
         [HttpPost]
@@ -80,6 +86,25 @@ namespace Api.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> RemoveCategory([FromRoute] long id)
+        {
+            try
+            {
+                if(id <= 0)
+                {
+                    return BadRequest();
+                }
+
+                await _repo.DeleteAsync(id);
+                await _repo.CommitAsync();
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }
