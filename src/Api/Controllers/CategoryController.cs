@@ -26,16 +26,23 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategoryList()
         {
-            var data = await _repo.GetAllAsync();
-
-            // NOTE: Only demo for test purposes
-            // TIP: If empty list, return 200 code
-            if (data.Count() == 0)
+            try
             {
-                return BadRequest();
-            }
+                var data = await _repo.GetAllAsync();
 
-            return Ok(data);
+                // NOTE: Only demo for test purposes
+                // TIP: If empty list, return 200 code
+                if (data.Count() == 0)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpGet("{id}")]
@@ -63,12 +70,19 @@ namespace Api.Controllers
         [ValidateModel]
         public async Task<ActionResult<CategoryCommandResult>> StoreCategory([FromBody] StoreCategoryCommand category)
         {
-            var response = await _repo.CreateAsync(category);
-            await _repo.CommitAsync();
+            try
+            {
+                var response = await _repo.CreateAsync(category);
+                await _repo.CommitAsync();
 
-            // NOTE: Only for testing purposes
-            // TIP: When creating register, return `201 CREATED` over `200 OK`
-            return Ok(response);
+                // NOTE: Only for testing purposes
+                // TIP: When creating register, return `201 CREATED` over `200 OK`
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPut]
