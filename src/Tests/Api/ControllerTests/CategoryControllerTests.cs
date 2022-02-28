@@ -45,7 +45,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Category", "Controller")]
-        public async Task GetCategoryList_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task GetCategoryList_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var mockRepo = new Mock<ICategoryRepository>();
             mockRepo.Setup(repo => repo.GetAllAsync()).Throws<Exception>();
@@ -87,7 +87,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Category", "Controller")]
-        public async Task GetCategoryById_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task GetCategoryById_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var mockRepo = new Mock<ICategoryRepository>();
             mockRepo.Setup(repo => repo.GetByIdAsync(99999L)).Throws<Exception>();
@@ -129,7 +129,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Category", "Controller")]
-        public async Task StoreCategory_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task StoreCategory_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var storeCategoryCommand = new StoreCategoryCommand()
             {
@@ -178,7 +178,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Category", "Controller")]
-        public async Task UpdateCategory_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task UpdateCategory_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var updateCategoryCommand = new UpdateCategoryCommand()
             {
@@ -227,7 +227,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Category", "Controller")]
-        public async Task DeleteCategory_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task DeleteCategory_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var mockRepo = new Mock<ICategoryRepository>();
             mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<long>())).Throws<Exception>();

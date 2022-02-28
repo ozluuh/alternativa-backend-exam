@@ -44,7 +44,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Product", "Controller")]
-        public async Task GetProductList_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task GetProductList_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var mockRepo = new Mock<IProductRepository>();
             mockRepo.Setup(repo => repo.GetAllAsync()).Throws<Exception>();
@@ -98,7 +98,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Product", "Controller")]
-        public async Task GetProductById_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task GetProductById_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var mockRepo = new Mock<IProductRepository>();
             mockRepo.Setup(repo => repo.GetByIdAsync(It.IsAny<long>())).Throws<Exception>();
@@ -145,7 +145,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Product", "Controller")]
-        public async Task StoreProduct_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task StoreProduct_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var storeProduct = new StoreProductCommand()
             {
@@ -195,7 +195,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Product", "Controller")]
-        public async Task UpdateProduct_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task UpdateProduct_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var updateProduct = new UpdateProductCommand()
             {
@@ -275,7 +275,7 @@ namespace Tests.Api.ControllerTests
 
         [Fact]
         [Trait("Product", "Controller")]
-        public async Task DeleteProduct_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        public async Task DeleteProduct_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
         {
             var mockRepo = new Mock<IProductRepository>();
             mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<long>())).Throws<Exception>();
