@@ -31,8 +31,8 @@ namespace Infra.Repositories
 
         public virtual async Task DeleteAsync(long id)
         {
-            E entity = await GetByIdAsync(id);
-            await Task.Run(() => _context.Set<E>().Remove(entity));
+            E entity = await _context.Set<E>().FindAsync(id);
+            _context.Set<E>().Remove(entity);
         }
 
         public virtual async Task<IEnumerable<E>> GetAllAsync()
