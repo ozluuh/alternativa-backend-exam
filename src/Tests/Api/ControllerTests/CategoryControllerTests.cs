@@ -84,7 +84,7 @@ namespace Tests.Api.ControllerTests
             };
 
             var mockRepo = new Mock<ICategoryRepository>();
-            mockRepo.Setup(repo => repo.CreateAsync(category)).ReturnsAsync(category);
+            mockRepo.Setup(repo => repo.CreateAsync(It.IsAny<Category>())).ReturnsAsync(category);
             var controller = new CategoryController(mockRepo.Object);
 
             var result = await controller.StoreCategory(storeCategoryCommand);
@@ -111,7 +111,7 @@ namespace Tests.Api.ControllerTests
             };
 
             var mockRepo = new Mock<ICategoryRepository>();
-            mockRepo.Setup(repo => repo.UpdateAsync(category)).ReturnsAsync(category);
+            mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<Category>())).ReturnsAsync(category);
             var controller = new CategoryController(mockRepo.Object);
 
             var result = await controller.UpdateCategory(updateCategoryCommand);
@@ -130,6 +130,19 @@ namespace Tests.Api.ControllerTests
             var result = await controller.RemoveCategory(1L);
 
             Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task DeleteCategory_ReturnsBadRequestResult_WhenCategoryHasDependents()
+        {
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.HasDependent(1L)).ReturnsAsync(true);
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.RemoveCategory(1L);
+
+            Assert.IsType<BadRequestResult>(result);
         }
     }
 }

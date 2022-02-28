@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Attributes;
-using Domain.Commands.Inputs;
 using Domain.Commands.Results;
+using Domain.Entities;
 using Domain.Mappings;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -13,31 +13,29 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers
 {
     [ApiController]
-    [Route("/api/category")]
-    public class CategoryController : ControllerBase
+    [Route("/api/product")]
+    public class ProductController : ControllerBase
     {
-        private readonly ICategoryRepository _repo;
+        private readonly IProductRepository _repo;
 
-        public CategoryController(ICategoryRepository repo)
+        public ProductController(IProductRepository productRepository)
         {
-            _repo = repo;
+            _repo = productRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryCommandResult>>> GetCategoryList()
+        public async Task<ActionResult<IEnumerable<ProductCommandResult>>> GetProductList()
         {
             try
             {
                 var response = await _repo.GetAllAsync();
 
-                // NOTE: Only demo for test purposes
-                // TIP: If empty list, return 200 code
                 if (response.Count() == 0)
                 {
                     return BadRequest();
                 }
 
-                var data = response.Select(e => e.ToCommandResult());
+                var data = response.Select(entity => entity.ToCommandResult());
 
                 return Ok(data);
             }
@@ -48,9 +46,8 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryCommandResult>> GetCategoryById([FromRoute] long id)
+        public async Task<ActionResult<ProductCommandResult>> GetProductById([FromRoute] long id)
         {
-            // COMMENT: Prevents unnecessary database query
             if (id <= 0)
             {
                 return BadRequest();
@@ -58,34 +55,30 @@ namespace Api.Controllers
 
             try
             {
-                var data = await _repo.GetByIdAsync(id);
+                var response = await _repo.GetByIdAsync(id);
 
-                if (data == null)
+                if (response == null)
                 {
                     return BadRequest();
                 }
 
-                return Ok(data.ToCommandResult());
+                return Ok(response.ToCommandResult());
             }
             catch (Exception)
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
-
         }
 
-        // COMMENT: ValidateModel check and return BadRequest if model is invalid
         [HttpPost]
         [ValidateModel]
-        public async Task<ActionResult<CategoryCommandResult>> StoreCategory([FromBody] StoreCategoryCommand category)
+        public async Task<ActionResult<ProductCommandResult>> StoreProduct([FromBody] StoreProductCommand storeProduct)
         {
             try
             {
-                var response = await _repo.CreateAsync(category.ToDomain());
+                var response = await _repo.CreateAsync(storeProduct.ToDomain());
                 await _repo.CommitAsync();
 
-                // NOTE: Only for testing purposes
-                // TIP: When creating register, return `201 CREATED` over `200 OK`
                 return Ok(response.ToCommandResult());
             }
             catch (Exception)
@@ -96,14 +89,22 @@ namespace Api.Controllers
 
         [HttpPut]
         [ValidateModel]
-        public async Task<ActionResult<CategoryCommandResult>> UpdateCategory([FromBody] UpdateCategoryCommand category)
+        public async Task<ActionResult<ProductCommandResult>> UpdateProduct([FromBody] UpdateProductCommand updateProductCommand)
         {
+            // NOTE: Validate if `id` not filled or less/equal than 0
+            // COMMENT: Implementation beyond API documentation, since this causes new entry in database
+            // TIP: Validation must be change to `Required` or other annotation in Command Input
+            if (updateProductCommand.Id <= 0)
+            {
+                return BadRequest(new { id = "Required/Must be filled" });
+            }
+
             try
             {
-                var response = await _repo.UpdateAsync(category.ToDomain());
+                var product = await _repo.UpdateAsync(updateProductCommand.ToDomain());
                 await _repo.CommitAsync();
 
-                return Ok(response.ToCommandResult());
+                return Ok(product.ToCommandResult());
             }
             catch (Exception)
             {
@@ -112,17 +113,10 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> RemoveCategory([FromRoute] long id)
+        public async Task<ActionResult> DeleteProduct([FromRoute] long id)
         {
+            // NOTE: Implementation beyond API documentation, to cover all cases
             if (id <= 0)
-            {
-                return BadRequest();
-            }
-
-            var HasDependent = await _repo.HasDependent(id);
-            // NOTE: Validates if there are related products instead of waiting
-            // to throw an exception trying to delete
-            if (HasDependent)
             {
                 return BadRequest();
             }

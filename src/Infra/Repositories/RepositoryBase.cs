@@ -23,24 +23,24 @@ namespace Infra.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<E> CreateAsync(E entity)
+        public virtual async Task<E> CreateAsync(E entity)
         {
             await _context.Set<E>().AddAsync(entity);
             return entity;
         }
 
-        public async Task DeleteAsync(long id)
+        public virtual async Task DeleteAsync(long id)
         {
-            E entity = await GetByIdAsync(id);
-            await Task.Run(() => _context.Set<E>().Remove(entity));
+            E entity = await _context.Set<E>().FindAsync(id);
+            _context.Set<E>().Remove(entity);
         }
 
-        public async Task<IEnumerable<E>> GetAllAsync()
+        public virtual async Task<IEnumerable<E>> GetAllAsync()
         {
             return await _context.Set<E>().AsNoTracking().ToListAsync();
         }
 
-        public async Task<E> GetByIdAsync(long id)
+        public virtual async Task<E> GetByIdAsync(long id)
         {
             return await _context
                             .Set<E>()
@@ -48,7 +48,7 @@ namespace Infra.Repositories
                             .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<E> UpdateAsync(E entity)
+        public virtual async Task<E> UpdateAsync(E entity)
         {
             await Task.Run(() => _context.Set<E>().Update(entity));
             return entity;
