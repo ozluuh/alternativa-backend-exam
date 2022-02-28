@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Reflection;
 using Domain.Repositories;
 using Infra.Contexts;
 using Infra.Repositories;
@@ -39,7 +41,22 @@ namespace Api
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Alternativa Backend Exam - API",
+                    Version = "v1",
+                    Description = "Sample CRUD implementation",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Luís Paulino",
+                        Url = new Uri("https://github.com/ozluuh")
+                    }
+                });
+
+                // Set the comments path for the Swagger JSON and UI.
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
@@ -56,9 +73,11 @@ namespace Api
             if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1"));
             }
+            // NOTE: Swagger always visible only for exam
+            // TIP: Must be visible only on certain environments
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1"));
 
             app.UseRouting();
 

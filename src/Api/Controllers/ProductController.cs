@@ -14,6 +14,11 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("/api/product")]
+    [Produces("application/json")]
+    // NOTE: Defined `object` type to prevents Swagger shows response `example value`
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class ProductController : ControllerBase
     {
         private readonly IProductRepository _repo;
@@ -23,6 +28,9 @@ namespace Api.Controllers
             _repo = productRepository;
         }
 
+        /// <summary>Obtain a product list.</summary>
+        /// <response code="400">In this case, if the list is equal to 0</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductCommandResult>>> GetProductList()
         {
@@ -45,6 +53,10 @@ namespace Api.Controllers
             }
         }
 
+        /// <summary>Obtain a product data by {id}</summary>
+        /// <param name="id"></param>
+        /// <response code="400">if {id} is less than or equal to 0 or is null</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductCommandResult>> GetProductById([FromRoute] long id)
         {
@@ -70,6 +82,22 @@ namespace Api.Controllers
             }
         }
 
+        /// <summary>Store product data</summary>
+        /// <remark>
+        /// Sample request:
+        ///
+        ///     POST /api/product
+        ///     {
+        ///        "name": "product",
+        ///        "description": "asfafasfsafas",
+        ///        "value": 0,
+        ///        "brand": "Brand",
+        ///        "CategoryId": 1
+        ///     }
+        ///</remark>
+        /// <param name="StoreProductCommand"></param>
+        /// <response code="400">if property validation does not pass</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpPost]
         [ValidateModel]
         public async Task<ActionResult<ProductCommandResult>> StoreProduct([FromBody] StoreProductCommand storeProduct)
@@ -87,6 +115,23 @@ namespace Api.Controllers
             }
         }
 
+        /// <summary>Update product data</summary>
+        /// <remark>
+        /// Sample request:
+        ///
+        ///     POST /api/product
+        ///     {
+        ///        "id": 1,
+        ///        "name": "product",
+        ///        "description": "asfafasfsafas",
+        ///        "value": 0,
+        ///        "brand": "Brand",
+        ///        "CategoryId": 1
+        ///     }
+        ///</remark>
+        /// <param name="UpdateProductCommand"></param>
+        /// <response code="400">if property validation does not pass</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpPut]
         [ValidateModel]
         public async Task<ActionResult<ProductCommandResult>> UpdateProduct([FromBody] UpdateProductCommand updateProductCommand)
@@ -112,6 +157,10 @@ namespace Api.Controllers
             }
         }
 
+        /// <summary>Remove product data by {id}</summary>
+        /// <param name="id"></param>
+        /// <response code="400">if {id} is less than or equal to 0 or {product} not exists</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct([FromRoute] long id)
         {
