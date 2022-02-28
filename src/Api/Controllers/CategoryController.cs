@@ -14,6 +14,11 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("/api/category")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    // NOTE: Defined `object` type to prevents Swagger shows response `example value`
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryRepository _repo;
@@ -23,6 +28,9 @@ namespace Api.Controllers
             _repo = repo;
         }
 
+        /// <summary>Obtain a category list.</summary>
+        /// <response code="400">In this case, if the list is equal to 0</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryCommandResult>>> GetCategoryList()
         {
@@ -47,6 +55,10 @@ namespace Api.Controllers
             }
         }
 
+        /// <summary>Obtain a category data by {id}</summary>
+        /// <param name="id"></param>
+        /// <response code="400">if {id} is less than or equal to 0 or is null</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryCommandResult>> GetCategoryById([FromRoute] long id)
         {
@@ -74,6 +86,19 @@ namespace Api.Controllers
 
         }
 
+        /// <summary>Store category data</summary>
+        /// <remark>
+        /// Sample request:
+        ///
+        ///     POST /api/category
+        ///     {
+        ///        "name": "categoria",
+        ///        "description": "asfafasfsafas"
+        ///     }
+        ///</remark>
+        /// <param name="StoreCategoryCommand"></param>
+        /// <response code="400">if property validation does not pass</response>
+        /// <response code="500">If any exception occurs</response>
         // COMMENT: ValidateModel check and return BadRequest if model is invalid
         [HttpPost]
         [ValidateModel]
@@ -94,6 +119,20 @@ namespace Api.Controllers
             }
         }
 
+        /// <summary>Updates category data</summary>
+        /// <remark>
+        /// Sample request:
+        ///
+        ///     PUT /api/category
+        ///     {
+        ///        "id": 1,
+        ///        "name": "categoria",
+        ///        "description": "asfafasfsafas"
+        ///     }
+        ///</remark>
+        /// <param name="UpdateCategoryCommand"></param>
+        /// <response code="400">if property validation does not pass</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpPut]
         [ValidateModel]
         public async Task<ActionResult<CategoryCommandResult>> UpdateCategory([FromBody] UpdateCategoryCommand category)
@@ -111,6 +150,10 @@ namespace Api.Controllers
             }
         }
 
+        /// <summary>Remove category data by {id}</summary>
+        /// <param name="long"></param>
+        /// <response code="400">if {id} is less than or equal to 0, {category} not exists or has {products} dependants</response>
+        /// <response code="500">If any exception occurs</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveCategory([FromRoute] long id)
         {

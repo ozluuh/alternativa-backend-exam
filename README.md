@@ -53,6 +53,8 @@ After image build, run the following command and test requests on your favorite 
 
 :bulb: Application will run on **<http://localhost:8000>**.
 
+:bulb: You can test on your preferred browser under <http://localhost:8000/swagger>
+
 Have fun testing! :smile:
 
 ## Database Model
