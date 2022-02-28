@@ -243,7 +243,49 @@ namespace Tests.Api.ControllerTests
 
             var response = await controller.UpdateProduct(updateProduct);
 
-            Assert.IsType<BadRequestResult>(response.Result);
+            Assert.IsType<BadRequestObjectResult>(response.Result);
+        }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task DeleteProduct_ReturnsOkResult_WhenSuccessfull()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<long>()));
+
+            var controller = new ProductController(mockRepo.Object);
+
+            var result = await controller.DeleteProduct(1L);
+
+            Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task DeleteProduct_ReturnsBadRequestResult_WhenIdIsLessOrEqualThanZero()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+
+            var controller = new ProductController(mockRepo.Object);
+
+            var result = await controller.DeleteProduct(-1L);
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        [Trait("Api", "Controller")]
+        public async Task DeleteProduct_ReturnsInternalServerErrorStatusCode_WhenAnyException()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<long>())).Throws<Exception>();
+            var controller = new ProductController(mockRepo.Object);
+
+            var result = await controller.DeleteProduct(999L);
+            var res = (StatusCodeResult)result;
+
+            Assert.IsType<StatusCodeResult>(result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
         }
     }
 }

@@ -111,5 +111,27 @@ namespace Api.Controllers
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProduct([FromRoute] long id)
+        {
+            // NOTE: Implementation beyond API documentation, to cover all cases
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _repo.DeleteAsync(id);
+                await _repo.CommitAsync();
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }
