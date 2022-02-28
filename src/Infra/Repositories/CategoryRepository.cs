@@ -10,9 +10,14 @@ namespace Infra.Repositories
     {
         public CategoryRepository(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-        public async Task<bool> HasDependent(long id)
+        public async Task<bool> NotExistsOrHasDependents(long id)
         {
             Category category = await _context.Categories.FindAsync(id);
+
+            if (category == null)
+            {
+                return true;
+            }
 
             int relatedDependents = _context
                                         .Entry(category)

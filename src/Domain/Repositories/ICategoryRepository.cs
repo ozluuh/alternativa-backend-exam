@@ -5,6 +5,6 @@ namespace Domain.Repositories
 {
     public interface ICategoryRepository : IRepositoryBase<Category>
     {
-        Task<bool> HasDependent(long id);
+        Task<bool> NotExistsOrHasDependents(long id);
     }
 }
