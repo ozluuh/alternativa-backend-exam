@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Controllers;
 using Domain.Commands.Inputs;
 using Domain.Entities;
 using Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -13,7 +15,7 @@ namespace Tests.Api.ControllerTests
     public class CategoryControllerTests
     {
         [Fact]
-        [Trait("Api", "Controller")]
+        [Trait("Category", "Controller")]
         public async Task GetCategoryList_ReturnsOkObjectResult_WhenSuccessful()
         {
             var mockRepo = new Mock<ICategoryRepository>();
@@ -28,7 +30,7 @@ namespace Tests.Api.ControllerTests
         }
 
         [Fact]
-        [Trait("Api", "Controller")]
+        [Trait("Category", "Controller")]
         public async Task GetCategoryList_ReturnsBadRequestResult_WhenNoData()
         {
             var mockRepo = new Mock<ICategoryRepository>();
@@ -40,8 +42,25 @@ namespace Tests.Api.ControllerTests
             Assert.IsType<BadRequestResult>(result.Result);
         }
 
+
         [Fact]
-        [Trait("Api", "Controller")]
+        [Trait("Category", "Controller")]
+        public async Task GetCategoryList_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
+        {
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.GetAllAsync()).Throws<Exception>();
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.GetCategoryList();
+
+            var res = (StatusCodeResult)result.Result;
+
+            Assert.IsType<StatusCodeResult>(result.Result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
+        }
+
+        [Fact]
+        [Trait("Category", "Controller")]
         public async Task GetCategoryById_ReturnsOkObjectResult_WhenSuccessful()
         {
             var mockRepo = new Mock<ICategoryRepository>();
@@ -54,7 +73,7 @@ namespace Tests.Api.ControllerTests
         }
 
         [Fact]
-        [Trait("Api", "Controller")]
+        [Trait("Category", "Controller")]
         public async Task GetCategoryById_ReturnsBadRequestResult_WhenNoData()
         {
             var mockRepo = new Mock<ICategoryRepository>();
@@ -67,7 +86,23 @@ namespace Tests.Api.ControllerTests
         }
 
         [Fact]
-        [Trait("Api", "Controller")]
+        [Trait("Category", "Controller")]
+        public async Task GetCategoryById_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
+        {
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.GetByIdAsync(99999L)).Throws<Exception>();
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.GetCategoryById(99999L);
+
+            var res = (StatusCodeResult)result.Result;
+
+            Assert.IsType<StatusCodeResult>(result.Result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
+        }
+
+        [Fact]
+        [Trait("Category", "Controller")]
         public async Task StoreCategory_ReturnsOkObjectResult_WhenSuccessfull()
         {
             var category = new Category()
@@ -93,7 +128,29 @@ namespace Tests.Api.ControllerTests
         }
 
         [Fact]
-        [Trait("Api", "Controller")]
+        [Trait("Category", "Controller")]
+        public async Task StoreCategory_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
+        {
+            var storeCategoryCommand = new StoreCategoryCommand()
+            {
+                Description = "Fukashigi no Carte",
+                Name = "Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai"
+            };
+
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.CreateAsync(It.IsAny<Category>())).Throws<Exception>();
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.StoreCategory(storeCategoryCommand);
+
+            var res = (StatusCodeResult)result.Result;
+
+            Assert.IsType<StatusCodeResult>(result.Result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
+        }
+
+        [Fact]
+        [Trait("Category", "Controller")]
         public async Task UpdateCategory_ReturnsOkObjectResult_WhenSuccessfull()
         {
             var category = new Category()
@@ -120,7 +177,30 @@ namespace Tests.Api.ControllerTests
         }
 
         [Fact]
-        [Trait("Api", "Controller")]
+        [Trait("Category", "Controller")]
+        public async Task UpdateCategory_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
+        {
+            var updateCategoryCommand = new UpdateCategoryCommand()
+            {
+                Id = 1L,
+                Description = "Fukashigi no Carte",
+                Name = "Seishun Buta Yarou wa Bunny Girl Senpai no Yume wo Minai"
+            };
+
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<Category>())).Throws<Exception>();
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.UpdateCategory(updateCategoryCommand);
+
+            var res = (StatusCodeResult)result.Result;
+
+            Assert.IsType<StatusCodeResult>(result.Result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
+        }
+
+        [Fact]
+        [Trait("Category", "Controller")]
         public async Task DeleteCategory_ReturnsOkResult_WhenSuccessfull()
         {
             var mockRepo = new Mock<ICategoryRepository>();
@@ -133,16 +213,31 @@ namespace Tests.Api.ControllerTests
         }
 
         [Fact]
-        [Trait("Api", "Controller")]
-        public async Task DeleteCategory_ReturnsBadRequestResult_WhenCategoryHasDependents()
+        [Trait("Category", "Controller")]
+        public async Task DeleteCategory_ReturnsBadRequestResult_WhenCategoryHasDependentsOrNotExists()
         {
             var mockRepo = new Mock<ICategoryRepository>();
-            mockRepo.Setup(repo => repo.HasDependent(1L)).ReturnsAsync(true);
+            mockRepo.Setup(repo => repo.NotExistsOrHasDependents(1L)).ReturnsAsync(true);
             var controller = new CategoryController(mockRepo.Object);
 
             var result = await controller.RemoveCategory(1L);
 
             Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        [Trait("Category", "Controller")]
+        public async Task DeleteCategory_ReturnsInternalServerErrorStatusCode_WhenAnExceptionOccurs()
+        {
+            var mockRepo = new Mock<ICategoryRepository>();
+            mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<long>())).Throws<Exception>();
+            var controller = new CategoryController(mockRepo.Object);
+
+            var result = await controller.RemoveCategory(999L);
+            var res = (StatusCodeResult)result;
+
+            Assert.IsType<StatusCodeResult>(result);
+            Assert.Equal(res.StatusCode, StatusCodes.Status500InternalServerError);
         }
     }
 }

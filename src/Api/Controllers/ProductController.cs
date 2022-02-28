@@ -121,6 +121,13 @@ namespace Api.Controllers
                 return BadRequest();
             }
 
+            bool NotExists = await _repo.NotExists(id);
+
+            if (NotExists)
+            {
+                return BadRequest();
+            }
+
             try
             {
                 await _repo.DeleteAsync(id);
