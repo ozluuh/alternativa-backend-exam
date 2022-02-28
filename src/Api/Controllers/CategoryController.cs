@@ -119,10 +119,10 @@ namespace Api.Controllers
                 return BadRequest();
             }
 
-            var HasDependent = await _repo.HasDependent(id);
-            // NOTE: Validates if there are related products instead of waiting
-            // to throw an exception trying to delete
-            if (HasDependent)
+            var NotExistsOrHasDependents = await _repo.NotExistsOrHasDependents(id);
+            // NOTE: Validates if category not exists or have any related products
+            // instead of waiting to throw an exception trying to delete
+            if (NotExistsOrHasDependents)
             {
                 return BadRequest();
             }

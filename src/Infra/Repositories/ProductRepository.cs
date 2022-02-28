@@ -45,5 +45,12 @@ namespace Infra.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<bool> NotExists(long id)
+        {
+            Product product = await _context.Products.FindAsync(id);
+
+            return product == null;
+        }
     }
 }
