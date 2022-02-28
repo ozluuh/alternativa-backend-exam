@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Repositories;
@@ -35,6 +37,14 @@ namespace Infra.Repositories
         {
             await base.UpdateAsync(entity);
             return IncludeReferences(entity);
+        }
+
+        public override async Task<IEnumerable<Product>> GetAllAsync()
+        {
+            return await _context.Products
+                .Include(p => p.Category)
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }
