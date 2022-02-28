@@ -118,6 +118,15 @@ namespace Api.Controllers
             {
                 return BadRequest();
             }
+
+            var HasDependent = await _repo.HasDependent(id);
+            // NOTE: Validates if there are related products instead of waiting
+            // to throw an exception trying to delete
+            if (HasDependent)
+            {
+                return BadRequest();
+            }
+
             try
             {
                 await _repo.DeleteAsync(id);
